@@ -71,10 +71,13 @@ class AppDateUtils {
     return DateTime(year, month, day, hour, min, sec);
   }
 
-  static String displayDate({dynamic date, String format = 'DD-MMM-YYYY HH:mm:ss'}) {
+  static String displayDate(
+      {dynamic date, String format = 'DD-MMM-YYYY HH:mm:ss'}) {
     if (TypeUtils.isEmpty(date)) return '';
     DateTime currDate = _handleInput(date);
-    return DateFormat(format, getIt.get<AppConfigCubit>().state.data!.locale.languageCode).format(currDate);
+    return DateFormat(
+            format, getIt.get<AppConfigCubit>().state.data!.locale.languageCode)
+        .format(currDate);
   }
 
   static DateTime _handleInput(dynamic input) {
@@ -97,19 +100,22 @@ class AppDateUtils {
 
 extension ExtDateFormat on DateTime {
   String toDateString({String? tmp}) {
-    return DateFormat(tmp ?? "dd MMMM yyyy", getIt.get<AppConfigCubit>().state.data!.locale.languageCode).format(this);
+    return DateFormat(tmp ?? "dd MMMM yyyy").format(this);
   }
 
   String toDDMMYYYY({String? tmp}) {
-    return DateFormat(tmp ?? "dd MM yyyy", getIt.get<AppConfigCubit>().state.data!.locale.languageCode).format(this);
+    return DateFormat(tmp ?? "dd MM yyyy",
+            getIt.get<AppConfigCubit>().state.data!.locale.languageCode)
+        .format(this);
   }
 
   String toDateReq() {
     return DateFormat("yyyyMMdd", "id").format(this);
   }
 
-  String toDateTimeReq() {
-    return DateFormat("yyyyMMddHHmmss", "id").format(this);
+
+  String toDateTimeReq(String? tmp) {
+    return DateFormat(tmp ?? "yyyyMMddHHmmss", "id").format(this);
   }
 
   String toYearMonth() {

@@ -1,6 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:date_picker_plus/date_picker_plus.dart';
+// import 'package:date_picker_plus/date_picker_plus.dart';
 import 'package:finlog/src/commons/constants/errors/app_error.dart';
 import 'package:finlog/src/commons/constants/styles/app_color.dart';
 import 'package:finlog/src/commons/constants/styles/app_space.dart';
@@ -15,6 +15,57 @@ import 'package:gap/gap.dart';
 
 class DialogUtils {
   DialogUtils._();
+
+  static Future<dynamic> bottomSheet({
+    required Widget child,
+    bool dismissFirst = true,
+    bool useCloseButton = true,
+    double? height,
+    double? width,
+    EdgeInsetsGeometry? padding,
+  }) async {
+    if (dismissFirst) {
+      SmartDialog.dismiss();
+    }
+
+    return SmartDialog.show(
+      alignment: Alignment.bottomCenter,
+      animationType: SmartAnimationType.centerFade_otherSlide,
+      builder: (context) {
+        return Container(
+          width: width ?? 1.sw,
+          height: height ?? 0.5.sh,
+          padding: padding ?? EdgeInsets.all(16.r),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(16.r),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              if (useCloseButton)
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    onPressed: () => SmartDialog.dismiss(),
+                    icon: const Icon(Icons.close, color: Colors.black54),
+                  ),
+                ),
+              Expanded(child: child),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   static void toastSuccess(String message, {bool dismissFirst = true}) {
     if (dismissFirst) {
@@ -163,7 +214,6 @@ class DialogUtils {
       ),
     );
   }
-  
 
   static Future<dynamic> custom({
     @Deprecated("use child instead") Widget? title,
@@ -201,76 +251,76 @@ class DialogUtils {
     );
   }
 
-  static Future<dynamic> pickDate({
-    required DateTime initialDate,
-    required DateTime maxDate,
-    required DateTime minDate,
-    void Function(DateTime selected)? onSelected,
-  }) async {
-    SmartDialog.show(
-      alignment: Alignment.center,
-      builder: (context) => _Container(
-        child: SizedBox(
-          width: 0.6.sw,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                DatePicker(
-                  initialDate: initialDate,
-                  selectedDate: initialDate,
-                  maxDate: maxDate,
-                  minDate: minDate,
-                  onDateSelected: (selected) {
-                    SmartDialog.dismiss();
-                    onSelected?.call(selected);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // static Future<dynamic> pickDate({
+  //   required DateTime initialDate,
+  //   required DateTime maxDate,
+  //   required DateTime minDate,
+  //   void Function(DateTime selected)? onSelected,
+  // }) async {
+  //   SmartDialog.show(
+  //     alignment: Alignment.center,
+  //     builder: (context) => _Container(
+  //       child: SizedBox(
+  //         width: 0.6.sw,
+  //         child: SingleChildScrollView(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.center,
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: [
+  //               DatePicker(
+  //                 initialDate: initialDate,
+  //                 selectedDate: initialDate,
+  //                 maxDate: maxDate,
+  //                 minDate: minDate,
+  //                 onDateSelected: (selected) {
+  //                   SmartDialog.dismiss();
+  //                   onSelected?.call(selected);
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  static Future<dynamic> pickDateRange({
-    required DateTime maxDate,
-    required DateTime minDate,
-    DateTime? initialDate,
-    DateTimeRange? selectedRange,
-    void Function(DateTimeRange range)? onSelected,
-  }) async {
-    SmartDialog.show(
-      alignment: Alignment.center,
-      builder: (context) => _Container(
-        child: SizedBox(
-          width: 0.6.sw,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                RangeDatePicker(
-                  maxDate: maxDate,
-                  minDate: minDate,
-                  initialDate: initialDate,
-                  selectedRange: selectedRange,
-                  onRangeSelected: (range) {
-                    SmartDialog.dismiss();
-                    onSelected?.call(range);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // static Future<dynamic> pickDateRange({
+  //   required DateTime maxDate,
+  //   required DateTime minDate,
+  //   DateTime? initialDate,
+  //   DateTimeRange? selectedRange,
+  //   void Function(DateTimeRange range)? onSelected,
+  // }) async {
+  //   SmartDialog.show(
+  //     alignment: Alignment.center,
+  //     builder: (context) => _Container(
+  //       child: SizedBox(
+  //         width: 0.6.sw,
+  //         child: SingleChildScrollView(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.center,
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: [
+  //               RangeDatePicker(
+  //                 maxDate: maxDate,
+  //                 minDate: minDate,
+  //                 initialDate: initialDate,
+  //                 selectedRange: selectedRange,
+  //                 onRangeSelected: (range) {
+  //                   SmartDialog.dismiss();
+  //                   onSelected?.call(range);
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   static void loading() {
     debugPrint('🔥 dialog_utils:58 ~ loading');

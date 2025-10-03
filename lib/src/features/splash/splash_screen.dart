@@ -6,6 +6,7 @@ import 'package:finlog/src/commons/constants/styles/app_color.dart';
 import 'package:finlog/src/commons/utils/app_icon.dart';
 import 'package:finlog/src/commons/utils/app_text.dart';
 import 'package:finlog/src/commons/utils/rotation_utils.dart';
+import 'package:finlog/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 
 @RoutePage()
@@ -16,25 +17,36 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const RotatingWidget(
-              repeat: true,
-              child: AppIcon(
-                AppAssets.logo,
-                size: 124,
+    return FutureBuilder(
+        future: Future.delayed(const Duration(seconds: 5)),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.done){
+            WidgetsBinding.instance.addPersistentFrameCallback((_){
+              if(context.mounted) {
+                context.router.replace(const NavBarRoute());
+              }
+            });
+          }
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const RotatingWidget(
+                    repeat: true,
+                    child: AppIcon(
+                      AppAssets.logo,
+                      size: 124,
+                    ),
+                  ),
+                  Text(
+                    "Fin Log",
+                    style: AppTextStyles.headline1(color: AppColor.blue500),
+                  ),
+                ],
               ),
             ),
-            Text(
-              "Fin Log",
-              style: AppTextStyles.headline1(color: AppColor.blue500),
-            ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 }

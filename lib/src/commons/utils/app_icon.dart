@@ -44,18 +44,3 @@ class AppIcon extends StatelessWidget {
     }
   }
 }
-
-
-// example 
-//  AppIcon(
-//   AppAssets.addIcon,
-//   size: 40,
-//   color: Colors.blue,
-//   ),
-//             const SizedBox(height: 16),
-//             AppIcon(
-//               AppAssets.worldmapImage,
-//               width: 150,
-//               height: 100,
-//               fit: BoxFit.cover,
-//             ),
