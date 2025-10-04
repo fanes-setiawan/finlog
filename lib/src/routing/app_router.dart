@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:finlog/src/features/card/screens/card_screen.dart';
 import 'package:finlog/src/features/home/screens/home_screen.dart';
+import 'package:finlog/src/features/home/screens/home_view_all_table.dart';
 import 'package:finlog/src/features/navbar/navbar.dart';
 import 'package:finlog/src/features/setting/screens/setting_screen.dart';
 import 'package:finlog/src/features/splash/splash_screen.dart';
@@ -14,10 +15,9 @@ class AppRouter extends RootStackRouter {
   RouteType get defaultRouteType => const RouteType.material();
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(
-          path: SplashScreen.path,
-          page: SplashRoute.page,
-        ),
+        AutoRoute(path: HomeViewAllTable.path,page: HomeViewAllRoute.page),
+        
+        AutoRoute( path: SplashScreen.path,page: SplashRoute.page ),
         AutoRoute(
           initial: true,
           page: NavBarRoute.page,

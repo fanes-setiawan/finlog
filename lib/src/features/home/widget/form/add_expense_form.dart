@@ -39,22 +39,31 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
     return false;
   }
 
-  @override
-void initState() {
-  super.initState();
-  if (widget.expenseModel != null) {
-    _amountController.text = widget.expenseModel!.amount.toString();
-    _noteController.text = widget.expenseModel!.note;
-    _selectedDateTime = widget.expenseModel!.date;
-    _selectedMethod = widget.expenseModel!.method;
-    _selectedType = widget.expenseModel!.type;
+  bool hasChanges() {
+    if (widget.expenseModel == null) return true;
 
-    if (!_expenseTypes.contains(widget.expenseModel!.type)) {
-      _expenseTypes.add(widget.expenseModel!.type);
+    return _amountController.text != widget.expenseModel!.amount.toString() ||
+        _noteController.text != widget.expenseModel!.note ||
+        _selectedDateTime != widget.expenseModel!.date ||
+        _selectedMethod != widget.expenseModel!.method ||
+        _selectedType != widget.expenseModel!.type;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.expenseModel != null) {
+      _amountController.text = widget.expenseModel!.amount.toString();
+      _noteController.text = widget.expenseModel!.note;
+      _selectedDateTime = widget.expenseModel!.date;
+      _selectedMethod = widget.expenseModel!.method;
+      _selectedType = widget.expenseModel!.type;
+
+      if (!_expenseTypes.contains(widget.expenseModel!.type)) {
+        _expenseTypes.add(widget.expenseModel!.type);
+      }
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +81,9 @@ void initState() {
           /// TITLE
           Center(
             child: Text(
-             (widget.expenseModel != null) ?"Edit Data":"Tambah Pengeluaran",
+              (widget.expenseModel != null)
+                  ? "Edit Data"
+                  : "Tambah Pengeluaran",
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -257,23 +268,23 @@ void initState() {
             ],
           ),
           const SizedBox(height: 20),
-
-          SecondaryButton(
-            onPressed: () {
-              if (isValidation()) {
-                final expense = ExpenseModel(
-                  type: _selectedType ?? "Lainnya",
-                  note: _noteController.text,
-                  amount: double.tryParse(_amountController.text) ?? 0,
-                  date: _selectedDateTime ?? DateTime.now(),
-                  method: _selectedMethod ?? "Cash",
-                );
-                context.read<ExpenseCubit>().addExpense(expense);
-                Navigator.pop(context);
-              }
-            },
-            label: widget.expenseModel !=null ?"Simpan": 'Tambah',
-          ),
+          if (hasChanges())
+            SecondaryButton(
+              onPressed: () {
+                if (isValidation()) {
+                  final expense = ExpenseModel(
+                    type: _selectedType ?? "Lainnya",
+                    note: _noteController.text,
+                    amount: double.tryParse(_amountController.text) ?? 0,
+                    date: _selectedDateTime ?? DateTime.now(),
+                    method: _selectedMethod ?? "Cash",
+                  );
+                  context.read<ExpenseCubit>().addExpense(expense);
+                  Navigator.pop(context);
+                }
+              },
+              label: widget.expenseModel != null ? "Simpan" : 'Tambah',
+            ),
         ],
       ),
     );

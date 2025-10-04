@@ -12,7 +12,9 @@ class DataCellWidget extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 14 , color: AppColors.neutral1),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 14, color: AppColors.neutral1),
       ),
     );
   }
@@ -24,23 +26,25 @@ class PayStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isCash = text.toUpperCase() == "CASH" ;
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18.0),
-        shape: BoxShape.rectangle,
-        color: isCash?AppColors.primary3: AppColors.primary2
-      ),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: AppText(
-            text.toUpperCase(),
-            style: const TextStyle(fontSize: 14 , color: AppColors.neutral1).bold,
+    bool isCash = text.toUpperCase() == "CASH";
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18.0),
+            shape: BoxShape.rectangle,
+            color: isCash ? AppColors.primary3 : AppColors.primary2),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: AppText(
+              text.toUpperCase(),
+              style:
+                  const TextStyle(fontSize: 14, color: AppColors.neutral1).bold,
+            ),
           ),
         ),
       ),
     );
   }
 }
-

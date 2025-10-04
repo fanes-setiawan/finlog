@@ -121,4 +121,7 @@ extension ExtDateFormat on DateTime {
   String toYearMonth() {
     return DateFormat("yyyyMM", "id").format(this);
   }
+  String toFullDateTime() {
+  return DateFormat("EEEE, d MMMM yyyy HH:mm", "id").format(this);
+}
 }

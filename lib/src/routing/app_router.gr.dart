@@ -48,6 +48,25 @@ class HomeRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [HomeViewAllTable]
+class HomeViewAllRoute extends PageRouteInfo<void> {
+  const HomeViewAllRoute({List<PageRouteInfo>? children})
+      : super(
+          HomeViewAllRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'HomeViewAllTable';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const HomeViewAllTable();
+    },
+  );
+}
+
+/// generated route for
 /// [NavBarScreen]
 class NavBarRoute extends PageRouteInfo<void> {
   const NavBarRoute({List<PageRouteInfo>? children})

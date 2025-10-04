@@ -11,7 +11,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 import 'src/commons/constants/theme_provider.dart';
 
 void main() async {
@@ -19,6 +19,7 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(ExpenseModelAdapter());
   final expenseBox = await Hive.openBox<ExpenseModel>('expenses');
+   await initializeDateFormatting('id_ID', null);
 
   final expenseRepository = ExpenseRepository(expenseBox);
 

@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:finlog/src/commons/constants/styles/app_colors.dart';
 import 'package:finlog/src/commons/constants/styles/sizing.dart';
 import 'package:finlog/src/commons/utils/fancy_fab.dart';
 import 'package:finlog/src/commons/widgets/app_text.dart';
@@ -6,6 +7,7 @@ import 'package:finlog/src/features/expense/cubit/expense_cubit.dart';
 import 'package:finlog/src/features/home/widget/credit_card_widget.dart';
 import 'package:finlog/src/features/home/widget/form/add_expense_form.dart';
 import 'package:finlog/src/features/home/widget/table/payment_table.dart';
+import 'package:finlog/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -30,47 +32,16 @@ class HomeScreen extends StatelessWidget {
               cvv: "6986",
             ),
             Gap(Sizing.sm),
-            // Card(
-            //   child: Padding(
-            //     padding: const EdgeInsets.all(8.0),
-            //     child: Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            // Text("Finance Action",
-            //     style: AppTextStyles.subtitle(color: AppColors.white)),
-            // const SizedBox(height: 12.0),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     CircleButtonIcon(
-            //         iconPath: AppAssets.ustdIcon,
-            //         label: "Loan",
-            //         onTap: () => debugPrint("Loan tapped")),
-            //     CircleButtonIcon(
-            //         iconPath: AppAssets.uploadIcon,
-            //         label: "Topup",
-            //         onTap: () => debugPrint("Topup tapped")),
-            //     CircleButtonIcon(
-            //         iconPath: AppAssets.downIcon,
-            //         label: "Receive",
-            //         onTap: () => debugPrint("Receive tapped")),
-            // CircleButtonIcon(
-            //     iconPath: AppAssets.upIcon,
-            //     label: "Add",
-            //     onTap: () => DialogUtils.bottomSheet(
-            //           useCloseButton: false,
-            //           dismissFirst: false,
-            //           child: const AddExpenseForm(),
-            //         )),
-            //   ],
-            // ),
-            //   ],
-            // ),
-            // ),
-            // ),
-
-            Gap(Sizing.sm),
-            const AppText("Data Pengeluaran").labelSmall.semiBold,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const AppText("Data Pengeluaran").labelSmall.semiBold,
+                TextButton(
+                  onPressed: () => context.pushRoute(const HomeViewAllRoute()),
+                  child: const AppText("All View").color(AppColors.neutral3),
+                ),
+              ],
+            ),
             Gap(Sizing.xs),
             BlocBuilder<ExpenseCubit, ExpenseState>(builder: (context, state) {
               if (state.status == ExpenseStatus.loading) {
