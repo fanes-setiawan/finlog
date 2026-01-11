@@ -7,46 +7,64 @@ import 'package:finlog/src/commons/utils/app_icon.dart';
 import 'package:finlog/src/commons/utils/app_text.dart';
 import 'package:finlog/src/commons/utils/rotation_utils.dart';
 import 'package:finlog/src/routing/app_router.dart';
+import 'package:finlog/src/features/auth/cubit/auth_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
 @RoutePage()
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   static const path = '/splash';
 
   const SplashScreen({super.key});
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Check current state after frame builds to ensure navigation context is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkState(context.read<AuthCubit>().state);
+    });
+  }
+
+  void _checkState(AuthState state) {
+    if (state is AuthAuthenticated) {
+      context.router.replace(const NavBarRoute());
+    } else if (state is AuthUnauthenticated) {
+      context.router.replace(const LoginRoute());
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: Future.delayed(const Duration(seconds: 5)),
-        builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.done){
-            WidgetsBinding.instance.addPersistentFrameCallback((_){
-              if(context.mounted) {
-                context.router.replace(const NavBarRoute());
-              }
-            });
-          }
-          return Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const RotatingWidget(
-                    repeat: true,
-                    child: AppIcon(
-                      AppAssets.logo,
-                      size: 124,
-                    ),
-                  ),
-                  Text(
-                    "Fin Log",
-                    style: AppTextStyles.headline1(color: AppColor.blue500),
-                  ),
-                ],
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        _checkState(state);
+      },
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const RotatingWidget(
+                repeat: true,
+                child: AppIcon(
+                  AppAssets.logo,
+                  size: 124,
+                ),
               ),
-            ),
-          );
-        });
+              Text(
+                "Fin Log",
+                style: AppTextStyles.headline1(color: AppColor.blue500),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

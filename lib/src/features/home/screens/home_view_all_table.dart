@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:finlog/src/commons/utils/app_date_utils.dart';
 import 'package:finlog/src/features/home/widget/form/add_expense_form.dart';
 import 'package:finlog/src/features/home/widget/table/data_cell.dart';
@@ -9,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:finlog/src/commons/constants/styles/app_colors.dart';
 import 'package:finlog/src/features/expense/cubit/expense_cubit.dart';
 
-@RoutePage()
 class HomeViewAllTable extends StatefulWidget {
   static const path = '/homeTableAll';
   const HomeViewAllTable({super.key});

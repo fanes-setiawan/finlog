@@ -43,7 +43,7 @@ class DialogUtils {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, -2),
               ),
@@ -355,7 +355,7 @@ class _Container extends StatelessWidget {
         borderRadius: BorderRadius.circular(8.r),
         boxShadow: [
           BoxShadow(
-            color: AppColor.bgTertiary.withOpacity(0.15),
+            color: AppColor.bgTertiary.withValues(alpha: 0.15),
             spreadRadius: 1,
             blurRadius: 0,
             offset: const Offset(0, 0),

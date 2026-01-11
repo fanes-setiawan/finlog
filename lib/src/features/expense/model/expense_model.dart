@@ -20,10 +20,10 @@ class ExpenseModel extends HiveObject {
   String method;
 
   ExpenseModel({
-    required this.type,
-    required this.note,
-    required this.amount,
-    required this.date,
-    required this.method,
-  });
+    this.type = '',
+    this.note = '',
+    this.amount = 0,
+    DateTime? date,
+    this.method = '',
+  }) : date = date ?? DateTime.now();
 }

@@ -138,7 +138,8 @@ class _UploadImageFormState extends State<UploadImageForm> {
               Container(
                 padding: EdgeInsets.all(Sizing.lg),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Sizing.borderRadiusMedium),
+                  borderRadius:
+                      BorderRadius.circular(Sizing.borderRadiusMedium),
                   color: AppColors.white,
                 ),
                 child: Column(
@@ -230,7 +231,8 @@ class _UploadImageFormState extends State<UploadImageForm> {
             width: double.infinity,
             height: 200,
             decoration: BoxDecoration(
-              color: _currentImage != null ? Colors.grey[100] : AppColors.primary4,
+              color:
+                  _currentImage != null ? Colors.grey[100] : AppColors.primary4,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: Colors.grey[300]!,
@@ -257,7 +259,7 @@ class _UploadImageFormState extends State<UploadImageForm> {
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.black.withOpacity(0.6),
+                            color: Colors.black.withValues(alpha: 0.6),
                           ),
                           child: IconButton(
                             onPressed: _selectImage,
@@ -277,7 +279,7 @@ class _UploadImageFormState extends State<UploadImageForm> {
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.red.withOpacity(0.8),
+                              color: Colors.red.withValues(alpha: 0.8),
                             ),
                             child: IconButton(
                               onPressed: _clearImage,

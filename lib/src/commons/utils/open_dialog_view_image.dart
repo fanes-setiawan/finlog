@@ -23,7 +23,9 @@ Future<void> openDialogViewImage(String image, {bool isLocal = false}) async {
             children: [
               // Zoomable Image
               PhotoView(
-                imageProvider: isLocal ? FileImage(File(image)) as ImageProvider : CachedNetworkImageProvider(image),
+                imageProvider: isLocal
+                    ? FileImage(File(image)) as ImageProvider
+                    : CachedNetworkImageProvider(image),
                 loadingBuilder: (context, event) => const Center(
                   child: CircularProgressIndicator(),
                 ),
@@ -41,9 +43,9 @@ Future<void> openDialogViewImage(String image, {bool isLocal = false}) async {
                   onPressed: () => SmartDialog.dismiss(),
                   icon: const Icon(Icons.close, color: Colors.white, size: 30),
                   style: const ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(Colors.black54),
-                    shape: MaterialStatePropertyAll(CircleBorder()),
-                    padding: MaterialStatePropertyAll(EdgeInsets.all(8)),
+                    backgroundColor: WidgetStatePropertyAll(Colors.black54),
+                    shape: WidgetStatePropertyAll(CircleBorder()),
+                    padding: WidgetStatePropertyAll(EdgeInsets.all(8)),
                   ),
                 ),
               ),

@@ -45,7 +45,10 @@ class AppConfigCubit extends Cubit<AppResult> {
   Future<void> getVersion() async {
     await process(
       () async {
-        bool isDev = FlavorConfig.instance.name != 'prod';
+        bool isDev = true;
+        try {
+          isDev = FlavorConfig.instance.name != 'prod';
+        } catch (_) {}
         PackageInfo packageInfo = await PackageInfo.fromPlatform();
         String version = packageInfo.version;
         String buildNumber = packageInfo.buildNumber;
@@ -57,7 +60,6 @@ class AppConfigCubit extends Cubit<AppResult> {
       emitSuccess: true,
     );
   }
-
 
   Future<void> setLocale(Locale locale) async {
     await process(

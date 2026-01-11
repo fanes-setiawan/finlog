@@ -23,7 +23,7 @@ class SideBarContainer extends StatelessWidget {
         color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 0,
             blurRadius: 8.r,
             offset: Offset(0, 2.r),

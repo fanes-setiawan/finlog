@@ -9,7 +9,8 @@ class StatusLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color backgroundColor = status == Flags.yes ? Colors.green : Colors.red;
+    final Color backgroundColor =
+        status == Flags.yes ? Colors.green : Colors.red;
     final String displayText = status == Flags.yes ? 'Aktif' : 'Non Aktif';
 
     return Wrap(
@@ -17,7 +18,7 @@ class StatusLabel extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: backgroundColor.withOpacity(0.2),
+            color: backgroundColor.withValues(alpha: 0.2),
           ),
           child: Text(
             displayText,
