@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:finlog/src/features/core/model/core_models.dart';
 import 'package:finlog/src/features/core/repository/firestore_repository.dart';
+import 'package:finlog/src/features/core/services/notification_service.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
@@ -18,8 +19,10 @@ class TransactionState with _$TransactionState {
 @injectable
 class TransactionCubit extends Cubit<TransactionState> {
   final FirestoreRepository _repository;
+  final NotificationService _notificationService;
 
-  TransactionCubit(this._repository) : super(const TransactionState.initial());
+  TransactionCubit(this._repository, this._notificationService)
+      : super(const TransactionState.initial());
 
   Future<void> loadTransactions(String userId, {DateTime? month}) async {
     try {
@@ -56,6 +59,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   Future<void> addTransaction(TransactionModel transaction) async {
     try {
+      print("DEBUG: Adding transaction... Check Budget Triggering...");
       // 1. Add Transaction
       await _repository.add<TransactionModel>(
         collectionPath: 'transactions',
@@ -85,8 +89,108 @@ class TransactionCubit extends Cubit<TransactionState> {
           data: {'balance': newBalance},
         );
       }
+
+      // 4. Check Budget Thresholds (Only for Expenses)
+      if (transaction.type == 'expense') {
+        _checkBudgetThresholds(transaction);
+      }
     } catch (e) {
       emit(TransactionState.error(e.toString()));
+    }
+  }
+
+  Future<void> _checkBudgetThresholds(TransactionModel transaction) async {
+    try {
+      if (transaction.date == null) return;
+
+      final targetDate = transaction.date!;
+      final period =
+          "${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}";
+      print(
+          "DEBUG: Checking budgets for period $period, category: ${transaction.categoryId}");
+
+      // Get Budget for this category
+      final budgets = await _repository.getCollection<BudgetModel>(
+        collectionPath: 'budgets',
+        fromJson: (data, id) => BudgetModel.fromJson(data).copyWith(id: id),
+        queryBuilder: (query) => query
+            .where('userId', isEqualTo: transaction.userId)
+            .where('categoryId', isEqualTo: transaction.categoryId)
+            .where('period', isEqualTo: period),
+      );
+
+      print("DEBUG: Found ${budgets.length} budgets.");
+
+      if (budgets.isNotEmpty) {
+        final budget = budgets.first;
+        if (budget.limitAmount <= 0) {
+          print("DEBUG: Budget limit <= 0. Skipping.");
+          return;
+        }
+
+        final startOfMonth = DateTime(targetDate.year, targetDate.month, 1);
+        final endOfMonth =
+            DateTime(targetDate.year, targetDate.month + 1, 0, 23, 59, 59);
+
+        final transactions = await _repository.getCollection<TransactionModel>(
+          collectionPath: 'transactions',
+          fromJson: (data, id) =>
+              TransactionModel.fromJson(data).copyWith(id: id),
+          queryBuilder: (query) => query
+              .where('userId', isEqualTo: transaction.userId)
+              .where('categoryId', isEqualTo: transaction.categoryId)
+              .where('type', isEqualTo: 'expense')
+              .where('date', isGreaterThanOrEqualTo: startOfMonth)
+              .where('date', isLessThanOrEqualTo: endOfMonth),
+        );
+
+        final isCurrentIncluded =
+            transactions.any((t) => t.id == transaction.id);
+        double totalExpense =
+            transactions.fold(0.0, (sum, t) => sum + t.amount);
+
+        if (!isCurrentIncluded) {
+          print(
+              "DEBUG: Current transaction not in query results yet. Adding manually: ${transaction.amount}");
+          totalExpense += transaction.amount;
+        }
+
+        final percentage = totalExpense / budget.limitAmount;
+
+        // Fetch Category Name for Notification
+        final category = await _repository.getDocument<CategoryModel>(
+          collectionPath: 'categories',
+          docId: transaction.categoryId,
+          fromJson: (data, id) => CategoryModel.fromJson(data).copyWith(id: id),
+        );
+        final categoryName = category?.name ?? 'Kategori';
+
+        print(
+            "DEBUG: Budget Check -> Budget: ${budget.limitAmount}, Total Expense: $totalExpense, Percentage: $percentage");
+
+        if (percentage >= 1.0) {
+          print("DEBUG: Triggering 100% Alert");
+          await _notificationService.showNotification(
+              id: budget.hashCode,
+              title: 'Over Budget: $categoryName 🚨',
+              body:
+                  'Pengeluaran $categoryName sudah mencapai ${(percentage * 100).toStringAsFixed(0)}% dari budget (Rp ${budget.limitAmount})!');
+        } else if (percentage >= 0.9) {
+          print("DEBUG: Triggering 90% Alert");
+          await _notificationService.showNotification(
+              id: budget.hashCode,
+              title: 'Warning Budget: $categoryName ⚠️',
+              body:
+                  'Pengeluaran $categoryName sudah mencapai ${(percentage * 100).toStringAsFixed(0)}% dari budget.');
+        } else {
+          print("DEBUG: No alert triggered (Percentage < 0.9)");
+        }
+      } else {
+        print("DEBUG: No budget found for category.");
+      }
+    } catch (e) {
+      // Silent error for budget check, don't block transaction flow
+      print("Budget Check Error (See logs): $e");
     }
   }
 
@@ -116,10 +220,6 @@ class TransactionCubit extends Cubit<TransactionState> {
       }
 
       // 2. Apply New Transaction Effect
-      // Fetch fresh wallet data (in case it's the same wallet, we need the reverted balance if updated,
-      // but simpler to fetch again or just calculate carefully.
-      // Safest is to fetch the target wallet for newTx separately.)
-
       final newWallet = await _repository.getDocument<WalletModel>(
         collectionPath: 'wallets',
         docId: newTx.walletId,
@@ -128,14 +228,6 @@ class TransactionCubit extends Cubit<TransactionState> {
 
       if (newWallet != null) {
         double newBalance = newWallet.balance;
-
-        // If same wallet, we must use the already reverted state?
-        // Actually, if oldWallet.id == newWallet.id, the Firestore update above might happen 'before' this read
-        // if we await properly. Firestore creates consistency.
-        // HOWEVER, to be safe and avoid race conditions or reading stale data if the previous update hasn't propagated
-        // to the read stream/cache instantly, we should chain logic carefully.
-        // But given basic await implementation:
-        // The revertedBalance update is awaited. So the next getDocument SHOULD see it.
 
         if (newTx.type == 'income') {
           newBalance += newTx.amount;
@@ -156,6 +248,11 @@ class TransactionCubit extends Cubit<TransactionState> {
         docId: newTx.id,
         data: newTx.toJson(),
       );
+
+      // 4. Check Budget (If expense)
+      if (newTx.type == 'expense') {
+        _checkBudgetThresholds(newTx);
+      }
     } catch (e) {
       emit(TransactionState.error(e.toString()));
     }

@@ -23,15 +23,16 @@ class WalletCubit extends Cubit<WalletState> {
 
   Future<void> loadWallets(String userId) async {
     try {
+      if (isClosed) return;
       emit(const WalletState.loading());
       _repository
           .streamCollection<WalletModel>(
         collectionPath: 'wallets',
-        fromJson: (data, id) =>
-            WalletModel.fromJson(data).copyWith(id: id), // Correct usage
+        fromJson: (data, id) => WalletModel.fromJson(data).copyWith(id: id),
         queryBuilder: (query) => query.where('userId', isEqualTo: userId),
       )
           .listen((wallets) {
+        if (isClosed) return;
         if (wallets.isEmpty) {
           // Auto-seed if empty
           seedWallets(userId);
@@ -39,10 +40,10 @@ class WalletCubit extends Cubit<WalletState> {
           emit(WalletState.success(wallets));
         }
       }, onError: (e) {
-        emit(WalletState.error(e.toString()));
+        if (!isClosed) emit(WalletState.error(e.toString()));
       });
     } catch (e) {
-      emit(WalletState.error(e.toString()));
+      if (!isClosed) emit(WalletState.error(e.toString()));
     }
   }
 
@@ -54,7 +55,7 @@ class WalletCubit extends Cubit<WalletState> {
         toJson: (model) => model.toJson(),
       );
     } catch (e) {
-      emit(WalletState.error(e.toString()));
+      if (!isClosed) emit(WalletState.error(e.toString()));
     }
   }
 
@@ -70,7 +71,7 @@ class WalletCubit extends Cubit<WalletState> {
         );
       }
     } catch (e) {
-      emit(WalletState.error(e.toString()));
+      if (!isClosed) emit(WalletState.error(e.toString()));
     }
   }
 }
